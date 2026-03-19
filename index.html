@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meydan Accreditation System — Royal Premier Events</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080A0D;
+    --bg2: #0F1218;
+    --bg3: #161B24;
+    --border: #1E2530;
+    --gold: #C8913A;
+    --gold-light: #E8B455;
+    --gold-dim: #8A6128;
+    --gold-glow: rgba(200,145,58,0.15);
+    --text: #D8D0C0;
+    --text-dim: #7A7060;
+    --text-bright: #F0E8D8;
+    --red: #C84040;
+    --red-dim: rgba(200,64,64,0.2);
+    --green: #48A870;
+    --green-dim: rgba(72,168,112,0.15);
+    --radius: 8px;
+    --radius-lg: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; }
+  body { overflow-x: hidden; }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+  /* ─── HEADER ─── */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #0C0F15 0%, var(--bg) 100%);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 42px; height: 42px; border: 1.5px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 20px;
+    color: var(--gold); letter-spacing: 1px;
+    background: var(--gold-glow);
+  }
+  .logo-text { font-family: 'Cormorant Garamond', serif; }
+  .logo-title { font-size: 20px; font-weight: 700; color: var(--text-bright); letter-spacing: 0.5px; }
+  .logo-sub { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; font-weight: 400; }
+
+  .storage-bar { flex: 1; max-width: 320px; margin: 0 40px; }
+  .storage-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px; }
+  .storage-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .storage-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .storage-fill.safe { background: linear-gradient(90deg, var(--green), var(--gold)); }
+  .storage-fill.warn { background: linear-gradient(90deg, var(--gold), var(--red)); }
+  .storage-warn-badge {
+    display: none; align-items: center; gap: 6px; margin-top: 5px;
+    font-size: 11px; color: var(--red); font-weight: 500;
+  }
+  .storage-warn-badge.visible { display: flex; }
+  .pulse { animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+  .btn { padding: 8px 16px; border-radius: var(--radius); cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; border: none; transition: all 0.2s; letter-spacing: 0.3px; }
+  .btn-gold { background: var(--gold); color: #0A0800; }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(200,145,58,0.3); }
+  .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--gold-dim); color: var(--text); }
+  .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid var(--red); }
+  .btn-danger:hover { background: var(--red); color: white; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+  /* ─── MAIN CONTENT ─── */
+  .main { padding: 32px; max-width: 1200px; margin: 0 auto; }
+
+  /* ─── SETUP / AUTH SCREENS ─── */
+  .center-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 80px); }
+  .setup-card {
+    width: 100%; max-width: 520px; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 40px; position: relative; overflow: hidden;
+  }
+  .setup-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .setup-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: var(--text-bright); margin-bottom: 6px; }
+  .setup-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 28px; line-height: 1.6; }
+  .setup-steps { margin-bottom: 24px; }
+  .step { display: flex; gap: 12px; margin-bottom: 14px; }
+  .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--gold-glow); border: 1px solid var(--gold-dim); color: var(--gold); font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step-text { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .step-text code { background: var(--bg3); color: var(--gold-light); padding: 1px 5px; border-radius: 3px; font-size: 11px; word-break: break-all; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; font-weight: 500; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text-bright); font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold-dim); }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .origin-box { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; font-size: 11px; color: var(--gold); word-break: break-all; cursor: pointer; transition: border-color 0.2s; }
+  .origin-box:hover { border-color: var(--gold-dim); }
+  .origin-list { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+  .origin-list .origin-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .origin-list .origin-row:last-child { border-bottom: none; }
+  .origin-list .origin-val { font-size: 11px; color: var(--gold); word-break: break-all; flex: 1; }
+  .origin-list .origin-tag { font-size: 10px; color: var(--text-dim); margin: 0 10px; white-space: nowrap; }
+  .origin-list .copy-btn { font-size: 10px; background: var(--border); color: var(--text-dim); border: none; border-radius: 3px; padding: 2px 7px; cursor: pointer; white-space: nowrap; }
+  .origin-list .copy-btn:hover { background: var(--gold-dim); color: var(--gold); }
+  .local-banner { background: rgba(200,145,58,0.08); border: 1px solid var(--gold-dim); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px; }
+  .local-banner-title { font-size: 13px; color: var(--gold-light); font-weight: 600; margin-bottom: 6px; }
+  .local-banner-body { font-size: 12px; color: var(--text-dim); line-height: 1.7; }
+  .cmd-block { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; font-family: monospace; font-size: 12px; color: var(--gold-light); margin: 8px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .cmd-block:hover { border-color: var(--gold-dim); }
+  .cmd-copy { font-size: 10px; color: var(--text-dim); }
+
+  /* ─── DASHBOARD ─── */
+  #dashboard { display: none; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text-bright); margin-bottom: 4px; }
+  .section-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 24px; letter-spacing: 0.3px; }
+  .divider { width: 40px; height: 1px; background: var(--gold-dim); margin: 8px 0 20px; }
+
+  /* ─── ORGANIZER GRID ─── */
+  .organizer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  @media (max-width: 720px) { .organizer-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .organizer-grid { grid-template-columns: 1fr; } }
+
+  .org-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 24px; cursor: default; transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .org-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--gold-glow) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .org-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .org-card:hover::after { opacity: 1; }
+  .org-avatar {
+    width: 48px; height: 48px; background: var(--gold-glow); border: 1px solid var(--gold-dim);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700;
+    color: var(--gold); margin-bottom: 16px;
+  }
+  .org-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--text-bright); margin-bottom: 4px; }
+  .org-count { font-size: 12px; color: var(--text-dim); margin-bottom: 18px; }
+  .org-count span { color: var(--gold); font-weight: 600; font-size: 15px; }
+  .org-actions { display: flex; gap: 8px; position: relative; z-index: 1; }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; position: relative;
+  }
+  .modal::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .modal-header { padding: 24px 28px 0; display: flex; align-items: flex-start; justify-content: space-between; }
+  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--text-bright); }
+  .modal-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .modal-close { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 20px; line-height: 1; padding: 2px 6px; border-radius: 4px; transition: all 0.2s; }
+  .modal-close:hover { color: var(--text-bright); background: var(--border); }
+  .modal-body { padding: 24px 28px; }
+  .modal-footer { padding: 0 28px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ─── PHOTO UPLOAD ─── */
+  .photo-upload {
+    border: 2px dashed var(--border); border-radius: var(--radius-lg);
+    padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s;
+    position: relative; margin-bottom: 16px;
+  }
+  .photo-upload:hover { border-color: var(--gold-dim); background: var(--gold-glow); }
+  .photo-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .photo-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-dim); margin: 0 auto 10px; display: none; }
+  .photo-icon { font-size: 32px; margin-bottom: 8px; }
+  .photo-hint { font-size: 12px; color: var(--text-dim); }
+  .photo-size { font-size: 11px; color: var(--gold); margin-top: 4px; }
+
+  /* ─── STAFF TABLE ─── */
+  .staff-table { width: 100%; border-collapse: collapse; }
+  .staff-table th { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 500; }
+  .staff-table td { padding: 10px 10px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); vertical-align: middle; }
+  .staff-table tr:last-child td { border-bottom: none; }
+  .staff-table tr:hover td { background: var(--bg3); }
+  .staff-thumb { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold-dim); }
+  .staff-initials { width: 34px; height: 34px; border-radius: 50%; background: var(--gold-glow); border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 700; color: var(--gold); }
+  .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; display: inline-flex; }
+  .badge-active { background: var(--green-dim); color: var(--green); }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-text { font-size: 13px; }
+
+  /* ─── TOAST ─── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+  .toast {
+    padding: 12px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 10px; pointer-events: auto;
+    animation: slideIn 0.3s ease; max-width: 320px; box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes fadeOut { to { transform: translateX(100%); opacity: 0; } }
+  .toast.success { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); }
+  .toast.error { background: var(--red-dim); border: 1px solid var(--red); color: var(--red); }
+  .toast.info { background: var(--gold-glow); border: 1px solid var(--gold-dim); color: var(--gold-light); }
+
+  /* ─── SPINNER ─── */
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-row { display: flex; align-items: center; gap: 10px; color: var(--text-dim); font-size: 13px; padding: 12px 0; }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar { display: flex; gap: 24px; margin-bottom: 28px; padding: 16px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); }
+  .status-item { display: flex; flex-direction: column; gap: 2px; }
+  .status-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .status-val { font-size: 18px; font-family: 'Cormorant Garamond', serif; color: var(--text-bright); font-weight: 600; }
+  .status-val.gold { color: var(--gold); }
+
+  /* ─── TABS ─── */
+  .tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 8px 14px; font-size: 12px; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* ─── MISC ─── */
+  .row { display: flex; gap: 12px; }
+  .row .field { flex: 1; }
+  .text-gold { color: var(--gold); }
+  .mt-16 { margin-top: 16px; }
+  .mt-8 { margin-top: 8px; }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .small { font-size: 11px; color: var(--text-dim); }
+  a { color: var(--gold); }
+  .tag { display: inline-block; padding: 2px 8px; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; font-size: 11px; color: var(--text-dim); margin: 2px; }
+
+  /* ─── SCAN INSTRUCTION BOX ─── */
+  .scan-instruction-box {
+    background: rgba(200,145,58,0.06); border: 1px solid var(--gold-dim);
+    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px;
+  }
+  .scan-instruction-title { font-size: 13px; color: var(--gold-light); font-weight: 600; margin-bottom: 8px; }
+  .scan-instruction-body { font-size: 12px; color: var(--text-dim); line-height: 1.8; }
+  .scan-field-tag {
+    display: inline-block; background: var(--bg3); border: 1px solid var(--gold-dim);
+    color: var(--gold); font-size: 10px; font-weight: 600; padding: 2px 7px;
+    border-radius: 4px; margin: 2px 3px; letter-spacing: 0.3px;
+  }
+
+  /* ─── SCAN INSTRUCTION BANNER ─── */
+  .scan-instruction-banner {
+    background: rgba(200,145,58,0.07); border: 1px solid rgba(200,145,58,0.25);
+    border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px;
+  }
+  .scan-instruction-title { font-size: 13px; font-weight: 600; color: var(--gold-light); margin-bottom: 5px; }
+  .scan-instruction-body { font-size: 12px; color: var(--text-dim); line-height: 1.7; }
+
+  /* ─── FIELD NUMBER BADGES ─── */
+  .field-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; background: var(--gold-dim); color: #000;
+    border-radius: 50%; font-size: 10px; font-weight: 700; margin-right: 5px;
+    flex-shrink: 0;
+  }
+  .field-ocr-badge {
+    font-size: 9px; background: rgba(200,145,58,0.15); color: var(--gold);
+    border: 1px solid var(--gold-dim); border-radius: 3px; padding: 1px 5px;
+    margin-left: 5px; font-weight: 600; vertical-align: middle; white-space: nowrap;
+  }
+  .field-manual-badge {
+    font-size: 9px; background: rgba(72,168,112,0.15); color: var(--green);
+    border: 1px solid rgba(72,168,112,0.4); border-radius: 3px; padding: 1px 5px;
+    margin-left: 5px; font-weight: 600; vertical-align: middle; white-space: nowrap;
+  }
+  .ocr-fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  @media (max-width: 480px) { .ocr-fields-grid { grid-template-columns: 1fr; } }
+  /* Full width fields */
+  .ocr-fields-grid .field:first-child { grid-column: 1 / -1; }
+
+  /* ─── DOC UPLOAD GRID ─── */
+  .doc-upload-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 4px; }
+  @media (max-width: 560px) { .doc-upload-grid { grid-template-columns: repeat(2, 1fr); } }
+  .doc-slot {
+    background: var(--bg3); border: 1.5px dashed var(--border); border-radius: var(--radius);
+    padding: 10px 8px 8px; text-align: center; cursor: pointer; transition: all 0.2s;
+    position: relative;
+  }
+  .doc-slot:hover { border-color: var(--gold-dim); background: var(--gold-glow); }
+  .doc-slot.uploaded { border-style: solid; border-color: var(--gold-dim); background: rgba(200,145,58,0.07); }
+  .doc-slot.missing { border-color: var(--red); background: var(--red-dim); animation: shake 0.3s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .doc-file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .doc-preview-wrap { width: 100%; aspect-ratio: 1; border-radius: 6px; overflow: hidden; margin-bottom: 6px; background: var(--bg2); display: flex; align-items: center; justify-content: center; }
+  .doc-thumb { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .doc-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+  .doc-icon { font-size: 26px; }
+  .doc-label { font-size: 11px; color: var(--text); font-weight: 600; margin-bottom: 2px; }
+  .doc-required { display: inline-block; font-size: 9px; background: var(--red-dim); color: var(--red); border-radius: 3px; padding: 1px 4px; margin-left: 4px; font-weight: 600; vertical-align: middle; }
+  .doc-required.done { background: var(--green-dim); color: var(--green); }
+  .doc-size { font-size: 10px; color: var(--text-dim); min-height: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">M</div>
+    <div class="logo-text">
+      <div class="logo-title">Meydan Accreditation</div>
+      <div class="logo-sub">Royal Premier Events Management</div>
+    </div>
+  </div>
+  <div class="storage-bar" id="storageBarWrap" style="display:none">
+    <div class="storage-label">
+      <span>Google Drive Storage</span>
+      <span id="storageSummary">—</span>
+    </div>
+    <div class="storage-track">
+      <div class="storage-fill safe" id="storageFill" style="width:0%"></div>
+    </div>
+    <div class="storage-warn-badge" id="storageWarnBadge">
+      <span class="pulse">⚠</span> Less than 2 GB remaining — please free up space
+    </div>
+  </div>
+  <div class="header-actions" id="headerActions">
+    <button class="btn btn-ghost btn-sm" onclick="showSetup()">⚙ Setup</button>
+    <button class="btn btn-ghost btn-sm" id="signOutBtn" onclick="signOut()" style="display:none">Sign Out</button>
+  </div>
+</header>
+
+<!-- ═══════════════ SETUP SCREEN ═══════════════ -->
+<div id="setupScreen" class="center-screen">
+  <div class="setup-card">
+    <div class="setup-title">Connect Google Drive</div>
+    <div class="setup-sub">Stores accreditation data and staff photos in your Google Drive under <strong style="color:var(--gold)">MEYDAN ACCREDITATION FORM</strong>. Works locally and on any server.</div>
+
+    <!-- LOCAL FILE WARNING — shown only when running from file:// -->
+    <div class="local-banner" id="localBanner" style="display:none">
+      <div class="local-banner-title">⚡ You're opening this as a local file</div>
+      <div class="local-banner-body">
+        Google OAuth does not work when opened directly from your filesystem (<code style="color:var(--gold)">file://</code>). 
+        You need to serve it over <code style="color:var(--gold)">http://localhost</code> instead — takes 5 seconds:<br><br>
+        <strong style="color:var(--text)">Option A — Python (built into most computers):</strong>
+        <div class="cmd-block" onclick="copyCmd(this)" title="Click to copy">
+          <span>python -m http.server 8000</span><span class="cmd-copy">copy</span>
+        </div>
+        Then open → <a href="http://localhost:8000" target="_blank">http://localhost:8000</a><br><br>
+        <strong style="color:var(--text)">Option B — VS Code:</strong> Install the <strong>Live Server</strong> extension → right-click this file → <em>Open with Live Server</em> (uses port 5500 automatically)<br><br>
+        <strong style="color:var(--text)">Option C — Node.js:</strong>
+        <div class="cmd-block" onclick="copyCmd(this)" title="Click to copy">
+          <span>npx serve .</span><span class="cmd-copy">copy</span>
+        </div>
+        Once you're on localhost, come back here — the rest works normally.
+      </div>
+    </div>
+
+    <div class="setup-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Go to <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> → Create a project named <em>Meydan Accreditation</em></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Enable <strong>Google Drive API</strong> and <strong>Google Sheets API</strong> under APIs &amp; Services → Library</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          Create an <strong>OAuth 2.0 Client ID</strong> (type: Web application). Under <em>Authorized JavaScript Origins</em>, add <strong>all the origins below</strong> — this lets the app work from your local machine <em>and</em> any server you deploy to:
+          <div class="origin-list mt-8" id="originList"><!-- filled by JS --></div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="copyAllOrigins()">⧉ Copy All Origins at Once</button>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Paste your <strong>Client ID</strong> below (ends in <code style="color:var(--gold)">.apps.googleusercontent.com</code>) and click Connect</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Google OAuth Client ID</label>
+      <input type="text" id="clientIdInput" placeholder="xxxxxxxxxx.apps.googleusercontent.com" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Drive F — Folder ID (optional)</label>
+      <input type="text" id="rootFolderInput" placeholder="Paste the folder ID from the Drive F URL" value="">
+      <div class="small" style="margin-top:5px">Open Drive F in Google Drive → copy the long string after <code>/folders/</code> in the URL. Leave blank to use My Drive root.</div>
+    </div>
+
+    <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="saveSetup()">Connect &amp; Sign In →</button>
+    <div class="small" style="margin-top:14px;text-align:center">Client ID is saved in this browser only — never sent anywhere</div>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="dashboard" class="main" style="display:none">
+  <div class="section-title">Accreditation Dashboard</div>
+  <div class="section-sub">Manage staff accreditation records per organizer. Photos are stored as JPG under 1 MB.</div>
+  <div class="divider"></div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-label">Total Staff</div>
+      <div class="status-val gold" id="totalStaff">—</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Organizers</div>
+      <div class="status-val">6</div>
+    </div>
+    <div class="status-item">
+      <div class="status-label">Drive Folder</div>
+      <div class="status-val" style="font-size:13px;margin-top:4px" id="folderStatus">Creating…</div>
+    </div>
+    <div class="status-item" style="margin-left:auto">
+      <div class="status-label">Master Sheet</div>
+      <div class="status-val" style="font-size:13px;margin-top:4px" id="sheetStatus">—</div>
+    </div>
+    <div class="status-item">
+      <button class="btn btn-ghost btn-sm" onclick="exportSheet()" id="exportBtn" style="margin-top:6px;display:none">⬇ Export Excel</button>
+    </div>
+  </div>
+
+  <div class="organizer-grid" id="orgGrid">
+    <!-- cards rendered by JS -->
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: REGISTER STAFF ═══════════════ -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="registerTitle">Register Staff</div>
+        <div class="modal-sub" id="registerSub">All 4 documents are required before submission</div>
+      </div>
+      <button class="modal-close" onclick="closeRegister()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- STEP 1: UPLOAD DOCUMENTS FIRST -->
+      <div class="scan-instruction-banner">
+        <div class="scan-instruction-title">📄 Step 1 — Upload Documents to Auto-Fill Form</div>
+        <div class="scan-instruction-body">
+          Upload <strong>Passport</strong> and <strong>EID Front</strong> below. The system will automatically scan and fill in fields 1, 3, 4, 6, 7, 8, 9, 10.<br>
+          <span style="color:var(--gold)">⚡ Field 2 (Phone No) must be entered manually.</span>
+        </div>
+      </div>
+
+      <hr class="separator">
+
+      <!-- DOCUMENT UPLOADS -->
+      <div style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div style="font-size:12px;color:var(--gold);font-weight:600;letter-spacing:1px;text-transform:uppercase">Required Documents</div>
+          <div id="autofillBadge" style="display:none;font-size:10px;background:var(--green-dim);color:var(--green);border:1px solid var(--green);border-radius:4px;padding:2px 8px;font-weight:600">⚡ Auto-fill ON</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim)">Accepts JPG, JPEG, PNG, PDF, HEIC, TIFF, BMP, WEBP — all auto-converted to JPG under 1 MB. Passport &amp; EID data <span style="color:var(--gold)">auto-extracted free</span> using in-browser OCR.</div>
+      </div>
+
+      <div class="doc-upload-grid">
+
+        <!-- PP PHOTO -->
+        <div class="doc-slot" id="slot_pp">
+          <input type="file" accept="image/*,.pdf,.heic,.heif,.tiff,.tif,.bmp,.webp" onchange="handleDoc('pp', this)" class="doc-file-input">
+          <div class="doc-preview-wrap">
+            <img class="doc-thumb" id="thumb_pp">
+            <div class="doc-placeholder" id="ph_pp">
+              <div class="doc-icon">🤳</div>
+            </div>
+          </div>
+          <div class="doc-label">PP Photo <span class="doc-required" id="req_pp">Required</span></div>
+          <div class="doc-size" id="sz_pp"></div>
+        </div>
+
+        <!-- PASSPORT -->
+        <div class="doc-slot" id="slot_passport">
+          <input type="file" accept="image/*,.pdf,.heic,.heif,.tiff,.tif,.bmp,.webp" onchange="handleDoc('passport', this)" class="doc-file-input">
+          <div class="doc-preview-wrap">
+            <img class="doc-thumb" id="thumb_passport">
+            <div class="doc-placeholder" id="ph_passport">
+              <div class="doc-icon">📘</div>
+            </div>
+          </div>
+          <div class="doc-label">Passport <span class="doc-required" id="req_passport">Required</span></div>
+          <div class="doc-size" id="sz_passport"></div>
+        </div>
+
+        <!-- EID FRONT -->
+        <div class="doc-slot" id="slot_eid_front">
+          <input type="file" accept="image/*,.pdf,.heic,.heif,.tiff,.tif,.bmp,.webp" onchange="handleDoc('eid_front', this)" class="doc-file-input">
+          <div class="doc-preview-wrap">
+            <img class="doc-thumb" id="thumb_eid_front">
+            <div class="doc-placeholder" id="ph_eid_front">
+              <div class="doc-icon">🪪</div>
+            </div>
+          </div>
+          <div class="doc-label">EID Front <span class="doc-required" id="req_eid_front">Required</span></div>
+          <div class="doc-size" id="sz_eid_front"></div>
+        </div>
+
+        <!-- EID BACK -->
+        <div class="doc-slot" id="slot_eid_back">
+          <input type="file" accept="image/*,.pdf,.heic,.heif,.tiff,.tif,.bmp,.webp" onchange="handleDoc('eid_back', this)" class="doc-file-input">
+          <div class="doc-preview-wrap">
+            <img class="doc-thumb" id="thumb_eid_back">
+            <div class="doc-placeholder" id="ph_eid_back">
+              <div class="doc-icon">🪪</div>
+            </div>
+          </div>
+          <div class="doc-label">EID Back <span class="doc-required" id="req_eid_back">Required</span></div>
+          <div class="doc-size" id="sz_eid_back"></div>
+        </div>
+
+      </div>
+
+      <!-- UPLOAD PROGRESS -->
+      <div id="uploadProgress" style="display:none;margin-top:14px">
+        <div class="loading-row"><span class="spinner"></span> <span id="uploadMsg">Uploading to Google Drive…</span></div>
+        <div style="margin-top:8px;background:var(--bg3);border-radius:var(--radius);overflow:hidden;height:4px">
+          <div id="uploadBar" style="height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));width:0%;transition:width 0.3s ease"></div>
+        </div>
+      </div>
+
+      <hr class="separator">
+
+      <!-- STEP 2: REVIEW / COMPLETE FIELDS -->
+      <div class="scan-instruction-banner" style="background:rgba(72,168,112,0.07);border-color:rgba(72,168,112,0.3);margin-bottom:16px">
+        <div class="scan-instruction-title" style="color:var(--green)">✏ Step 2 — Review &amp; Complete Fields</div>
+        <div class="scan-instruction-body">Fields marked <span style="color:var(--gold)">⚡ Auto-filled</span> come from OCR scan. Please review and correct if needed. <strong style="color:var(--text)">Phone No must be entered manually.</strong></div>
+      </div>
+
+      <!-- FIELD 2: PHONE — MANUAL ONLY -->
+      <div class="field">
+        <label><span class="field-num">2</span> Phone No <span class="field-manual-badge">✋ Enter Manually</span></label>
+        <input type="text" id="staffPhone" placeholder="e.g. 97158 598 1984" style="border-color:var(--gold-dim)">
+      </div>
+
+      <!-- OCR AUTO-FILLED FIELDS -->
+      <div class="ocr-fields-grid">
+        <div class="field">
+          <label><span class="field-num">1</span> Full Name in English (as in Passport) * <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffName" placeholder="Scanning from Passport…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">3</span> Passport No <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffPassportNo" placeholder="Scanning from Passport…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">4</span> Passport Expiry Date <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffPassportExpiry" placeholder="Scanning from Passport…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">5</span> Visa Expiry Date <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffVisaExpiry" placeholder="e.g. 6-Jan-2027">
+        </div>
+        <div class="field">
+          <label><span class="field-num">6</span> EID Number <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffEidNo" placeholder="Scanning from EID Front…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">7</span> Nationality <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffNationality" placeholder="Scanning from Passport…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">8</span> Date of Birth <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffDob" placeholder="Scanning from Passport…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">9</span> Sponsor <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffSponsor" placeholder="Scanning from EID Front…">
+        </div>
+        <div class="field">
+          <label><span class="field-num">10</span> Occupation * <span class="field-ocr-badge">⚡ Auto-filled</span></label>
+          <input type="text" id="staffRole" placeholder="Scanning from Passport/EID…">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="staffNotes" placeholder="e.g. MUHREM NOT ALLOWED TO WORK"></textarea>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeRegister()">Cancel</button>
+      <button class="btn btn-gold" onclick="submitStaff()" id="submitBtn">Register Staff →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL: STAFF LIST ═══════════════ -->
+<div class="modal-overlay" id="staffModal">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="staffModalTitle">Staff List</div>
+        <div class="modal-sub" id="staffModalSub">Accredited staff members</div>
+      </div>
+      <button class="modal-close" onclick="closeStaffModal()">✕</button>
+    </div>
+    <div class="modal-body" id="staffModalBody">
+      <div class="loading-row"><span class="spinner"></span> Loading…</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="refreshStaffList()">↺ Refresh</button>
+      <button class="btn btn-gold btn-sm" onclick="openRegisterFromList()">+ Add Staff</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TOAST CONTAINER ═══════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══════════════ GOOGLE IDENTITY SERVICES ═══════════════ -->
+<script src="https://accounts.google.com/gsi/client"></script>
+<!-- PDF.js for PDF → image conversion -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
+<!-- Tesseract.js for free in-browser OCR — no API key needed -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<script>
+// ════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════
+const ORGANIZERS = ['BON','GINA','EMS','JOANNA','REAH','MARICRIS'];
+const ROOT_FOLDER_NAME = 'MEYDAN ACCREDITATION FORM';
+const SHEET_NAME = 'MEYDAN ACCREDITATION MASTER';
+const WARN_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
+const MAX_PHOTO_BYTES = 1 * 1024 * 1024;   // 1 MB
+const SCOPES = [
+  'https://www.googleapis.com/auth/drive',
+  'https://www.googleapis.com/auth/spreadsheets'
+].join(' ');
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let S = {
+  clientId: '',
+  rootFolderId: null,
+  mainFolderId: null,
+  sheetId: null,
+  sheetUrl: null,
+  orgFolderIds: {},
+  staffCounts: {},
+  totalStaffCount: 0,
+  accessToken: null,
+  tokenClient: null,
+  activeOrg: null,
+  extractedData: {},
+};
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Detect if running as file://
+  const isLocal = window.location.protocol === 'file:';
+  if (isLocal) {
+    document.getElementById('localBanner').style.display = 'block';
+  }
+
+  // Build origin list — always show all standard origins + current if on http
+  const origins = [];
+  if (!isLocal && window.location.origin && window.location.origin !== 'null') {
+    origins.push({ val: window.location.origin, tag: 'This page / your server' });
+  }
+  origins.push({ val: 'https://claude.ai',          tag: 'Claude.ai' });
+  origins.push({ val: 'http://localhost:5500',       tag: 'VS Code Live Server' });
+  origins.push({ val: 'http://127.0.0.1:5500',       tag: 'VS Code (alt)' });
+  origins.push({ val: 'http://localhost:8000',       tag: 'Python http.server' });
+  origins.push({ val: 'http://127.0.0.1:8000',       tag: 'Python (alt)' });
+  origins.push({ val: 'http://localhost:3000',       tag: 'Node / npx serve' });
+  origins.push({ val: 'http://localhost:4000',       tag: 'Other local' });
+
+  // Deduplicate by value
+  const seen = new Set();
+  const uniqueOrigins = origins.filter(o => { if (seen.has(o.val)) return false; seen.add(o.val); return true; });
+
+  const listEl = document.getElementById('originList');
+  if (listEl) {
+    listEl.innerHTML = uniqueOrigins.map(o => `
+      <div class="origin-row">
+        <span class="origin-val">${o.val}</span>
+        <span class="origin-tag">${o.tag}</span>
+        <button class="copy-btn" onclick="copySingle(this,'${o.val}')">copy</button>
+      </div>`).join('');
+  }
+  S.allOrigins = uniqueOrigins.map(o => o.val);
+
+  S.clientId = localStorage.getItem('meydan_clientId') || '';
+  S.rootFolderId = localStorage.getItem('meydan_rootFolderId') || null;
+
+  if (S.clientId) {
+    document.getElementById('clientIdInput').value = S.clientId;
+    document.getElementById('rootFolderInput').value = S.rootFolderId || '';
+    tryAuth();
+  } else {
+    showScreen('setup');
+  }
+});
+
+function showScreen(name) {
+  document.getElementById('setupScreen').style.display = name === 'setup' ? 'flex' : 'none';
+  document.getElementById('dashboard').style.display = name === 'dashboard' ? 'block' : 'none';
+  document.getElementById('signOutBtn').style.display = name === 'dashboard' ? 'inline-block' : 'none';
+  document.getElementById('storageBarWrap').style.display = name === 'dashboard' ? 'block' : 'none';
+}
+
+// ════════════════════════════════════════════════════
+// SETUP
+// ════════════════════════════════════════════════════
+function saveSetup() {
+  const btn = document.querySelector('.setup-card .btn-gold');
+  const cid = document.getElementById('clientIdInput').value.trim();
+  const rid = document.getElementById('rootFolderInput').value.trim();
+
+  if (!cid) {
+    alert('Please paste your Google Client ID first.');
+    return;
+  }
+
+  // Visual feedback immediately
+  if (btn) { btn.textContent = 'Loading…'; btn.disabled = true; }
+
+  S.clientId = cid;
+  S.rootFolderId = rid || null;
+  localStorage.setItem('meydan_clientId', cid);
+  if (rid) localStorage.setItem('meydan_rootFolderId', rid);
+  else localStorage.removeItem('meydan_rootFolderId');
+
+  // Check if Google script loaded
+  if (!window.google) {
+    alert('Google Sign-In script has not loaded yet. Make sure you are connected to the internet, then refresh the page and try again.');
+    if (btn) { btn.textContent = 'Connect & Sign In →'; btn.disabled = false; }
+    return;
+  }
+  if (!window.google.accounts) {
+    alert('Google Accounts API not available. Please refresh the page and try again.');
+    if (btn) { btn.textContent = 'Connect & Sign In →'; btn.disabled = false; }
+    return;
+  }
+
+  tryAuth(true);
+}
+
+function showSetup() {
+  document.getElementById('clientIdInput').value = S.clientId || '';
+  document.getElementById('rootFolderInput').value = S.rootFolderId || '';
+  showScreen('setup');
+}
+
+function tryAuth(forcePopup, retries) {
+  retries = retries || 0;
+
+  if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+    if (retries > 20) {
+      const btn = document.querySelector('.setup-card .btn-gold');
+      if (btn) { btn.textContent = 'Connect & Sign In →'; btn.disabled = false; }
+      alert('Google Sign-In failed to load.\n\n1. Make sure you are connected to the internet\n2. The URL must start with http:// not file://\n3. Refresh the page (Ctrl+R) and try again');
+      return;
+    }
+    setTimeout(() => tryAuth(forcePopup, retries + 1), 500);
+    return;
+  }
+
+  if (!S.clientId) { showScreen('setup'); return; }
+
+  try {
+    S.tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: S.clientId,
+      scope: SCOPES,
+      callback: handleToken,
+      error_callback: (err) => {
+        console.error('Auth error:', err);
+        const btn = document.querySelector('.setup-card .btn-gold');
+        if (btn) { btn.textContent = 'Connect & Sign In →'; btn.disabled = false; }
+        if (err.type === 'popup_closed') {
+          alert('Sign-in popup was closed. Click Connect & Sign In again.');
+        } else if (err.type === 'popup_failed_to_open') {
+          alert('POPUP BLOCKED!\n\n1. Look at the TOP RIGHT of your address bar\n2. Click the blocked popup icon\n3. Select Always allow popups from this site\n4. Click Connect & Sign In again');
+        } else if (err.type === 'invalid_client') {
+          alert('Invalid Client ID. It should end in .apps.googleusercontent.com\n\nGo back to Google Console and copy it again.');
+        } else {
+          alert('Sign-in error: ' + (err.type || JSON.stringify(err)) + '\n\nPress F12 then Console tab for details.');
+        }
+        showScreen('setup');
+      }
+    });
+    S.tokenClient.requestAccessToken({ prompt: forcePopup ? 'select_account' : '' });
+  } catch(e) {
+    const btn = document.querySelector('.setup-card .btn-gold');
+    if (btn) { btn.textContent = 'Connect & Sign In →'; btn.disabled = false; }
+    alert('Error: ' + e.message + '\n\nCheck your Client ID and try again.');
+    console.error(e);
+  }
+}
+
+
+function handleToken(resp) {
+  const btn = document.querySelector('.setup-card .btn-gold');
+  if (resp.error) {
+    if (btn) { btn.textContent = 'Connect & Sign In →'; btn.disabled = false; }
+    if (resp.error === 'popup_blocked_by_browser') {
+      alert('POPUP BLOCKED!\n\nLook at the top right of your address bar for a blocked popup icon. Click it → Allow popups → then try again.');
+    } else if (resp.error === 'access_denied') {
+      alert('Access denied.\n\nMake sure your Gmail is added as a Test User in Google Console:\nAPIs & Services → OAuth Consent Screen → Test Users → + ADD USERS → add your Gmail.');
+    } else {
+      alert('Sign-in error: ' + resp.error + '\n\nPlease try again or check F12 Console.');
+    }
+    showScreen('setup');
+    return;
+  }
+  S.accessToken = resp.access_token;
+  if (btn) { btn.textContent = '✓ Signed In!'; }
+  showScreen('dashboard');
+  renderOrgGrid();
+  initDrive();
+  setTimeout(() => S.tokenClient?.requestAccessToken({ prompt: '' }), (resp.expires_in - 300) * 1000);
+}
+
+function signOut() {
+  if (S.accessToken) google.accounts.oauth2.revoke(S.accessToken);
+  S.accessToken = null;
+  S.mainFolderId = null;
+  S.sheetId = null;
+  S.orgFolderIds = {};
+  showScreen('setup');
+}
+
+// ════════════════════════════════════════════════════
+// DRIVE INIT
+// ════════════════════════════════════════════════════
+async function initDrive() {
+  try {
+    await checkStorage();
+    const parentId = S.rootFolderId || null;
+    S.mainFolderId = await getOrCreateFolder(ROOT_FOLDER_NAME, parentId);
+    document.getElementById('folderStatus').innerHTML = `<a href="https://drive.google.com/drive/folders/${S.mainFolderId}" target="_blank" style="color:var(--gold)">✓ Open Folder ↗</a>`;
+
+    for (const org of ORGANIZERS) {
+      S.orgFolderIds[org] = await getOrCreateFolder(org, S.mainFolderId);
+    }
+
+    await initSheet();
+    await loadStaffCounts();
+    renderOrgGrid();
+
+    // Poll storage every 3 min
+    setInterval(checkStorage, 180000);
+  } catch (e) {
+    toast('Drive error: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+// ════════════════════════════════════════════════════
+// STORAGE CHECK
+// ════════════════════════════════════════════════════
+async function checkStorage() {
+  const data = await driveGet('about?fields=storageQuota');
+  const { limit, usage } = data.storageQuota;
+  const lim = parseInt(limit), use = parseInt(usage);
+  const free = lim - use;
+  const pct = Math.min((use / lim) * 100, 100);
+
+  const fill = document.getElementById('storageFill');
+  fill.style.width = pct + '%';
+  fill.className = 'storage-fill ' + (free < WARN_BYTES ? 'warn' : 'safe');
+
+  document.getElementById('storageSummary').textContent = `${fmtBytes(free)} free`;
+
+  const badge = document.getElementById('storageWarnBadge');
+  if (free < WARN_BYTES) {
+    badge.classList.add('visible');
+    toast('⚠ Drive storage low: only ' + fmtBytes(free) + ' remaining!', 'error');
+  } else {
+    badge.classList.remove('visible');
+  }
+}
+
+// ════════════════════════════════════════════════════
+// GOOGLE SHEETS (Live Excel)
+// ════════════════════════════════════════════════════
+async function initSheet() {
+  // Search for existing sheet
+  const q = `name='${SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false` +
+            (S.mainFolderId ? ` and '${S.mainFolderId}' in parents` : '');
+  const res = await driveGet(`files?q=${encodeURIComponent(q)}&fields=files(id,webViewLink,name)`);
+
+  if (res.files.length > 0) {
+    S.sheetId = res.files[0].id;
+    S.sheetUrl = res.files[0].webViewLink;
+  } else {
+    // Create sheet
+    const meta = { name: SHEET_NAME, mimeType: 'application/vnd.google-apps.spreadsheet', parents: S.mainFolderId ? [S.mainFolderId] : [] };
+    const created = await drivePost('files', meta);
+    S.sheetId = created.id;
+    S.sheetUrl = `https://docs.google.com/spreadsheets/d/${S.sheetId}/edit`;
+    // Add header row
+    await sheetsAppend([[
+      'SL NO',
+      'FIRST AND LAST NAME IN ENGLISH AS IN PASSPORT',
+      'NAME IN ARABIC',
+      'PHONE NO',
+      'PASSPORT NO',
+      'PASSPORT EXPIRY DATE',
+      'VISA EXPIRY DATE',
+      'EID NUMBER',
+      'NATIONALITY',
+      'DATE OF BIRTH',
+      'SPONSOR',
+      'OCCUPATION',
+      'ORGANIZER',
+      'DATE ADDED',
+      'PP PHOTO URL','PASSPORT URL','EID FRONT URL','EID BACK URL',
+      'PP FILE ID','PASSPORT FILE ID','EID FRONT FILE ID','EID BACK FILE ID',
+      'STATUS','NOTES'
+    ]]);
+  }
+
+  document.getElementById('sheetStatus').innerHTML = `<a href="${S.sheetUrl}" target="_blank" style="color:var(--gold)">✓ Open Sheet ↗</a>`;
+  document.getElementById('exportBtn').style.display = 'inline-block';
+}
+
+async function sheetsAppend(values) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}/values/Sheet1!A1:append?valueInputOption=USER_ENTERED`;
+  await fetch(url, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${S.accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values })
+  });
+}
+
+function exportSheet() {
+  if (!S.sheetId) return;
+  const url = `https://docs.google.com/spreadsheets/d/${S.sheetId}/export?format=xlsx&id=${S.sheetId}`;
+  window.open(url, '_blank');
+  toast('Downloading Excel file…', 'info');
+}
+
+// ════════════════════════════════════════════════════
+// STAFF COUNTS
+// ════════════════════════════════════════════════════
+async function loadStaffCounts() {
+  let total = 0;
+  for (const org of ORGANIZERS) {
+    const fid = S.orgFolderIds[org];
+    if (!fid) continue;
+    const res = await driveGet(`files?q=${encodeURIComponent(`'${fid}' in parents and mimeType='image/jpeg' and trashed=false`)}&fields=files(id)&pageSize=1000`);
+    const count = res.files.length;
+    S.staffCounts[org] = count;
+    total += count;
+  }
+  document.getElementById('totalStaff').textContent = total;
+  renderOrgGrid();
+}
+
+// ════════════════════════════════════════════════════
+// ORG GRID
+// ════════════════════════════════════════════════════
+function renderOrgGrid() {
+  const colors = ['#C8913A','#A87830','#D4A850','#B08540','#C09040','#D8B060'];
+  const grid = document.getElementById('orgGrid');
+  grid.innerHTML = ORGANIZERS.map((org, i) => {
+    const count = S.staffCounts[org] ?? '—';
+    return `
+    <div class="org-card">
+      <div class="org-avatar" style="color:${colors[i]};border-color:${colors[i]}40;background:${colors[i]}15">${org[0]}</div>
+      <div class="org-name">${org}</div>
+      <div class="org-count">Accredited staff: <span>${count}</span></div>
+      <div class="org-actions">
+        <button class="btn btn-gold btn-sm" onclick="openRegister('${org}')">+ Add Staff</button>
+        <button class="btn btn-ghost btn-sm" onclick="openStaffList('${org}')">View All</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════
+// REGISTER STAFF
+// ════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+// DOCUMENT SLOTS
+// ════════════════════════════════════════════════════
+const DOC_SLOTS = [
+  { id: 'pp',        label: 'PP Photo',  prefix: 'PP'        },
+  { id: 'passport',  label: 'Passport',  prefix: 'PASSPORT'  },
+  { id: 'eid_front', label: 'EID Front', prefix: 'EID_FRONT' },
+  { id: 'eid_back',  label: 'EID Back',  prefix: 'EID_BACK'  },
+];
+let pendingDocs = {}; // { pp: Blob, passport: Blob, eid_front: Blob, eid_back: Blob }
+
+function openRegister(org) {
+  S.activeOrg = org;
+  document.getElementById('registerTitle').textContent = `Register Staff — ${org}`;
+  document.getElementById('registerSub').textContent = `All 4 documents required before submission`;
+  ['staffName','staffRole','staffPhone','staffNationality','staffNotes',
+   'staffPassportNo','staffPassportExpiry','staffVisaExpiry',
+   'staffEidNo','staffDob','staffSponsor'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  // Reset all doc slots
+  pendingDocs = {};
+  DOC_SLOTS.forEach(slot => {
+    const thumb = document.getElementById('thumb_' + slot.id);
+    const ph    = document.getElementById('ph_'    + slot.id);
+    const req   = document.getElementById('req_'   + slot.id);
+    const sz    = document.getElementById('sz_'    + slot.id);
+    const slotEl = document.getElementById('slot_' + slot.id);
+    thumb.style.display = 'none'; thumb.src = '';
+    ph.style.display = 'flex';
+    req.textContent = 'Required'; req.className = 'doc-required';
+    sz.textContent = '';
+    slotEl.classList.remove('uploaded', 'missing');
+  });
+
+  document.getElementById('uploadProgress').style.display = 'none';
+  document.getElementById('uploadBar').style.width = '0%';
+  document.getElementById('submitBtn').disabled = false;
+  S.extractedData = {};
+  // Auto-fill is always available (Tesseract.js, no key needed)
+  document.getElementById('autofillBadge').style.display = 'block';
+  document.getElementById('registerModal').classList.add('open');
+}
+
+function closeRegister() { document.getElementById('registerModal').classList.remove('open'); }
+
+async function handleDoc(slotId, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const slotEl = document.getElementById('slot_' + slotId);
+  const sz     = document.getElementById('sz_'   + slotId);
+  const req    = document.getElementById('req_'  + slotId);
+
+  slotEl.classList.remove('missing');
+  sz.textContent = 'Converting…';
+  req.textContent = '⏳ Processing'; req.className = 'doc-required';
+
+  // Convert any format → JPG under 1MB
+  const blob = await fileToJpgBlob(file, MAX_PHOTO_BYTES);
+  if (!blob) {
+    sz.textContent = '';
+    req.textContent = 'Required'; req.className = 'doc-required';
+    toast('Could not convert this file — try a different format or file', 'error');
+    return;
+  }
+
+  pendingDocs[slotId] = blob;
+
+  // Show preview
+  const url = URL.createObjectURL(blob);
+  const thumb = document.getElementById('thumb_' + slotId);
+  const ph    = document.getElementById('ph_'    + slotId);
+  thumb.src = url; thumb.style.display = 'block';
+  ph.style.display = 'none';
+
+  // Update badge
+  const originalExt = file.name.split('.').pop().toUpperCase();
+  req.textContent = '✓ Ready'; req.className = 'doc-required done';
+  sz.textContent = `${originalExt}→JPG · ${fmtBytes(blob.size)}`;
+  slotEl.classList.add('uploaded');
+
+  // Run OCR auto-fill in background (non-blocking)
+  if (['passport','eid_front'].includes(slotId)) {
+    sz.textContent += ' · 🔍 Reading…';
+    extractDocData(slotId, blob).then(() => {
+      sz.textContent = `${originalExt}→JPG · ${fmtBytes(blob.size)}`;
+    });
+  }
+
+  // Check if all 4 done
+  const allDone = DOC_SLOTS.every(s => pendingDocs[s.id]);
+  if (allDone) toast('✓ All 4 documents ready — you can now submit!', 'success');
+}
+
+function setProgress(pct, msg) {
+  document.getElementById('uploadMsg').textContent = msg;
+  document.getElementById('uploadBar').style.width = pct + '%';
+}
+
+async function submitStaff() {
+  const name = document.getElementById('staffName').value.trim();
+  const role = document.getElementById('staffRole').value.trim();
+  if (!name || !role) { toast('Name and role are required', 'error'); return; }
+  if (!S.mainFolderId) { toast('Drive not ready yet — please wait', 'error'); return; }
+
+  // Validate all 4 docs
+  const missing = DOC_SLOTS.filter(s => !pendingDocs[s.id]);
+  if (missing.length > 0) {
+    missing.forEach(s => {
+      document.getElementById('slot_' + s.id).classList.add('missing');
+    });
+    toast(`Missing: ${missing.map(s => s.label).join(', ')} — all 4 documents are required`, 'error');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  document.getElementById('uploadProgress').style.display = 'block';
+
+  try {
+    const org = S.activeOrg;
+    const folderId = S.orgFolderIds[org];
+    const staffId = 'RPE-' + Date.now();
+    const safeName = name.replace(/\s+/g, '_');
+    const date = new Date().toLocaleDateString('en-GB');
+    const fileIds = {};
+
+    // Upload each document one by one
+    for (let i = 0; i < DOC_SLOTS.length; i++) {
+      const slot = DOC_SLOTS[i];
+      const pct = Math.round(((i) / DOC_SLOTS.length) * 80);
+      setProgress(pct, `Uploading ${slot.label} (${i+1}/4)…`);
+      const filename = `${staffId}_${safeName}_${slot.prefix}.jpg`;
+      const uploaded = await uploadFile(pendingDocs[slot.id], filename, folderId);
+      fileIds[slot.id] = uploaded.id;
+    }
+
+    setProgress(85, 'Updating master sheet…');
+    const ppUrl       = `https://drive.google.com/file/d/${fileIds.pp}/view`;
+    const passportUrl = `https://drive.google.com/file/d/${fileIds.passport}/view`;
+    const eidFrontUrl = `https://drive.google.com/file/d/${fileIds.eid_front}/view`;
+    const eidBackUrl  = `https://drive.google.com/file/d/${fileIds.eid_back}/view`;
+
+    const ex = S.extractedData || {};
+    // Get next SL NO from sheet row count
+    const slNo = (S.totalStaffCount || 0) + 1;
+    S.totalStaffCount = slNo;
+
+    const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+
+    await sheetsAppend([[
+      slNo,
+      name,
+      '', // NAME IN ARABIC — intentionally left blank
+      getVal('staffPhone'),
+      getVal('staffPassportNo')  || ex.passport_number || '',
+      getVal('staffPassportExpiry') || ex.expiry_date  || '',
+      getVal('staffVisaExpiry'),
+      getVal('staffEidNo')       || ex.id_number       || '',
+      getVal('staffNationality') || ex.nationality     || '',
+      getVal('staffDob')         || ex.date_of_birth   || '',
+      getVal('staffSponsor'),
+      role,
+      org,
+      date,
+      ppUrl, passportUrl, eidFrontUrl, eidBackUrl,
+      fileIds.pp, fileIds.passport, fileIds.eid_front, fileIds.eid_back,
+      'Active',
+      getVal('staffNotes')
+    ]]);
+
+    setProgress(100, 'Done!');
+    S.staffCounts[org] = (S.staffCounts[org] || 0) + 1;
+    const total = ORGANIZERS.reduce((s, o) => s + (S.staffCounts[o] || 0), 0);
+    document.getElementById('totalStaff').textContent = total;
+    renderOrgGrid();
+
+    toast(`✓ ${name} registered with all 4 documents!`, 'success');
+    setTimeout(() => closeRegister(), 600);
+  } catch (e) {
+    toast('Error: ' + e.message, 'error');
+    console.error(e);
+    btn.disabled = false;
+    document.getElementById('uploadProgress').style.display = 'none';
+  }
+}
+
+// ════════════════════════════════════════════════════
+// STAFF LIST MODAL
+// ════════════════════════════════════════════════════
+async function openStaffList(org) {
+  S.activeOrg = org;
+  document.getElementById('staffModalTitle').textContent = `${org} — Staff List`;
+  document.getElementById('staffModalSub').textContent = 'Accredited staff members';
+  document.getElementById('staffModal').classList.add('open');
+  await loadStaffListUI(org);
+}
+
+async function loadStaffListUI(org) {
+  const body = document.getElementById('staffModalBody');
+  body.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading staff…</div>';
+  const fid = S.orgFolderIds[org];
+  if (!fid) { body.innerHTML = '<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-text">Folder not ready yet</div></div>'; return; }
+
+  // Get files from Drive folder
+  const res = await driveGet(`files?q=${encodeURIComponent(`'${fid}' in parents and mimeType='image/jpeg' and trashed=false`)}&fields=files(id,name,createdTime,size)&orderBy=createdTime desc&pageSize=100`);
+
+  // Get sheet data for names/roles
+  let sheetRows = [];
+  if (S.sheetId) {
+    try {
+      const sr = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}/values/Sheet1!A2:K1000`, {
+        headers: { 'Authorization': `Bearer ${S.accessToken}` }
+      });
+      const sd = await sr.json();
+      sheetRows = (sd.values || []).filter(r => r[3] === org);
+    } catch {}
+  }
+
+  if (sheetRows.length === 0 && res.files.length === 0) {
+    body.innerHTML = '<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-text">No staff registered yet. Click Add Staff to begin.</div></div>';
+    return;
+  }
+
+  // Build table from sheet data (more reliable)
+  const rows = sheetRows.length > 0 ? sheetRows : res.files.map(f => [f.id, f.name.replace('.jpg',''), '', org, '', '', new Date(f.createdTime).toLocaleDateString('en-GB'), '', f.id, 'Active', '']);
+
+  body.innerHTML = `
+    <table class="staff-table">
+      <thead>
+        <tr>
+          <th>Photo</th><th>Staff ID</th><th>Name</th><th>Role</th><th>Phone</th><th>Date</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r => {
+          const fileId = r[8];
+          const imgEl = fileId
+            ? `<img src="https://drive.google.com/thumbnail?id=${fileId}&sz=w64-h64" class="staff-thumb" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : '';
+          const initial = (r[1]||'?')[0].toUpperCase();
+          return `<tr>
+            <td style="width:48px">
+              ${imgEl}
+              <div class="staff-initials" style="${fileId?'display:none':''}"> ${initial}</div>
+            </td>
+            <td style="font-size:11px;color:var(--text-dim)">${r[0]||'—'}</td>
+            <td><strong>${r[1]||'—'}</strong></td>
+            <td>${r[2]||'—'}</td>
+            <td>${r[4]||'—'}</td>
+            <td>${r[6]||'—'}</td>
+            <td><span class="badge badge-active">${r[9]||'Active'}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div class="small" style="margin-top:12px">Showing ${rows.length} record${rows.length !== 1 ? 's' : ''} · Data synced from Google Sheets</div>
+  `;
+  document.getElementById('staffModalSub').textContent = `${rows.length} accredited staff member${rows.length !== 1 ? 's' : ''}`;
+}
+
+async function refreshStaffList() { await loadStaffListUI(S.activeOrg); }
+function closeStaffModal() { document.getElementById('staffModal').classList.remove('open'); }
+function openRegisterFromList() { closeStaffModal(); openRegister(S.activeOrg); }
+
+// ════════════════════════════════════════════════════
+// FILE → JPG CONVERTER (handles PDF, HEIC, PNG, JPEG, BMP, WEBP, TIFF, etc.)
+// ════════════════════════════════════════════════════
+async function fileToJpgBlob(file, maxBytes) {
+  const type = file.type.toLowerCase();
+  const name = file.name.toLowerCase();
+
+  // ── PDF: render first page with PDF.js ──
+  if (type === 'application/pdf' || name.endsWith('.pdf')) {
+    return await pdfToJpg(file, maxBytes);
+  }
+
+  // ── HEIC/HEIF: try native decode first, fallback message ──
+  if (name.endsWith('.heic') || name.endsWith('.heif') || type.includes('heic') || type.includes('heif')) {
+    // Safari/iOS can decode natively, Chrome cannot
+    try {
+      return await imageFileToJpg(file, maxBytes);
+    } catch(e) {
+      toast('HEIC not supported in this browser — please convert to JPG first or use Safari on iPhone', 'error');
+      return null;
+    }
+  }
+
+  // ── All other images: JPEG, PNG, BMP, WEBP, TIFF, GIF ──
+  return await imageFileToJpg(file, maxBytes);
+}
+
+function imageFileToJpg(file, maxBytes) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX_DIM = 1600;
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if (w > MAX_DIM || h > MAX_DIM) {
+        const r = Math.min(MAX_DIM/w, MAX_DIM/h);
+        w = Math.round(w*r); h = Math.round(h*r);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; // white background (for PNGs with transparency)
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      const attempt = (q) => {
+        canvas.toBlob(blob => {
+          if (!blob) { resolve(null); return; }
+          if (blob.size <= maxBytes || q <= 0.2) resolve(blob);
+          else attempt(Math.max(q - 0.08, 0.2));
+        }, 'image/jpeg', q);
+      };
+      attempt(0.92);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+async function pdfToJpg(file, maxBytes) {
+  if (typeof pdfjsLib === 'undefined') {
+    toast('PDF support is loading — please try again in a moment', 'error');
+    return null;
+  }
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const page = await pdf.getPage(1); // first page only
+  const viewport = page.getViewport({ scale: 2.0 }); // high-res render
+  const canvas = document.createElement('canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  await page.render({ canvasContext: ctx, viewport }).promise;
+  return new Promise(resolve => {
+    const attempt = (q) => {
+      canvas.toBlob(blob => {
+        if (!blob) { resolve(null); return; }
+        if (blob.size <= maxBytes || q <= 0.2) resolve(blob);
+        else attempt(Math.max(q - 0.08, 0.2));
+      }, 'image/jpeg', q);
+    };
+    attempt(0.92);
+  });
+}
+
+// Legacy alias used elsewhere
+function compressImage(file, maxBytes) { return fileToJpgBlob(file, maxBytes); }
+
+// ════════════════════════════════════════════════════
+// OCR AUTO-FILL via Tesseract.js (FREE, runs in browser)
+// ════════════════════════════════════════════════════
+let tesseractWorker = null;
+
+async function getTesseractWorker() {
+  if (tesseractWorker) return tesseractWorker;
+  toast('Loading OCR engine… (first time only, ~5 sec)', 'info');
+  tesseractWorker = await Tesseract.createWorker(['eng'], 1);
+  return tesseractWorker;
+}
+
+function toTitleCase(str) {
+  return str.toLowerCase().replace(/\w/g, c => c.toUpperCase()).trim();
+}
+
+async function extractDocData(slotId, blob) {
+  if (!['passport','eid_front'].includes(slotId)) return;
+  const isPassport = slotId === 'passport';
+  try {
+    const worker = await getTesseractWorker();
+    const imageUrl = URL.createObjectURL(blob);
+    const { data } = await worker.recognize(imageUrl);
+    URL.revokeObjectURL(imageUrl);
+    const raw = data.text || '';
+    if (!S.extractedData) S.extractedData = {};
+    let filled = [];
+
+    if (isPassport) {
+      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      const mrzLines = lines.filter(l => /^[A-Z0-9<]{30,}$/.test(l.replace(/\s/g,'')));
+      if (mrzLines.length >= 2) {
+        const mrz1 = mrzLines[mrzLines.length-2].replace(/\s/g,'').padEnd(44,'<');
+        const mrz2 = mrzLines[mrzLines.length-1].replace(/\s/g,'').padEnd(44,'<');
+        const namePart = mrz1.substring(5).replace(/</g,' ').trim();
+        const nameParts = namePart.split(/\s{2,}/);
+        const surname = (nameParts[0]||'').trim();
+        const given   = (nameParts[1]||'').replace(/\s+/g,' ').trim();
+        S.extractedData.full_name      = given ? given+' '+surname : surname;
+        S.extractedData.passport_number= mrz2.substring(0,9).replace(/</g,'').trim();
+        S.extractedData.nationality    = mrz2.substring(10,13).replace(/</g,'').trim();
+        const fmt = d => d.length===6 ? d.substring(4,6)+'-'+d.substring(2,4)+'-'+(parseInt(d.substring(0,2))>30?'19':'20')+d.substring(0,2) : '';
+        S.extractedData.date_of_birth  = fmt(mrz2.substring(13,19));
+        S.extractedData.expiry_date    = fmt(mrz2.substring(21,27));
+        const sex = mrz2.substring(20,21);
+        S.extractedData.gender = sex==='M'?'Male':sex==='F'?'Female':'';
+      } else {
+        for (const line of lines) {
+          if (/nationality/i.test(line) && !/[؀-ۿ]/.test(line)) {
+            const v = line.replace(/.*[:|]/,'').trim();
+            if (v.length>1) S.extractedData.nationality = v.toUpperCase();
+          }
+          if (/passport.?no|document.?no/i.test(line)) {
+            const v = line.replace(/.*[:|]/,'').trim();
+            if (v.length>2) S.extractedData.passport_number = v;
+          }
+        }
+      }
+    } else {
+      // EID parsing
+      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      for (const line of lines) {
+        // EID number 784-XXXX-XXXXXXX-X
+        const eidMatch = line.match(/784[-\s]?\d{4}[-\s]?\d{7}[-\s]?\d/);
+        if (eidMatch) S.extractedData.id_number = eidMatch[0].replace(/\s/g,'');
+        // Name English only
+        if (/name/i.test(line) && !/[؀-ۿ]/.test(line)) {
+          const v = line.replace(/.*[:|]/,'').trim();
+          if (v.length>2 && /^[A-Za-z\s]+$/.test(v)) S.extractedData.full_name = v.toUpperCase();
+        }
+        // Nationality
+        if (/nationality/i.test(line) && !/[؀-ۿ]/.test(line)) {
+          const v = line.replace(/.*[:|]/,'').trim();
+          if (v.length>1) S.extractedData.nationality = v.toUpperCase();
+        }
+        // Dates
+        const dateMatch = line.match(/\d{2}\/\d{2}\/\d{4}/);
+        if (dateMatch && /expir/i.test(line)) S.extractedData.eid_expiry = dateMatch[0];
+        if (dateMatch && /permit|residence|visa/i.test(line)) S.extractedData.visa_expiry = dateMatch[0];
+        // Sponsor / Employer
+        if (/sponsor|employer/i.test(line) && !/[؀-ۿ]/.test(line)) {
+          const v = line.replace(/.*[:|]/,'').trim();
+          if (v.length>2) S.extractedData.sponsor = v.toUpperCase();
+        }
+        // Occupation / Profession
+        if (/occupation|profession/i.test(line) && !/[؀-ۿ]/.test(line)) {
+          const v = line.replace(/.*[:|]/,'').trim();
+          if (v.length>2) S.extractedData.occupation = v.toUpperCase();
+        }
+        // Gender
+        if (/\bMale\b/i.test(line)) S.extractedData.gender = 'Male';
+        if (/\bFemale\b/i.test(line)) S.extractedData.gender = 'Female';
+      }
+    }
+
+    // ── Auto-fill form fields ──
+    // PHONE NO (field 2) is intentionally NEVER auto-filled — manual entry only
+    const fillIfEmpty = (id, val) => {
+      if (!val || !String(val).trim()) return false;
+      const el = document.getElementById(id);
+      if (!el || el.value.trim()) return false;
+      el.value = String(val).trim();
+      highlightField(id);
+      return true;
+    };
+
+    if (S.extractedData.full_name) {
+      const eng = S.extractedData.full_name
+        .replace(/[؀-ۿݐ-ݿࢠ-ࣿ]+/g,'')
+        .replace(/\s+/g,' ').trim().toUpperCase();
+      if (eng.length > 1 && fillIfEmpty('staffName', eng)) filled.push('\u2460 Name');
+    }
+    if (fillIfEmpty('staffPassportNo',     S.extractedData.passport_number))                   filled.push('\u2462 Passport No');
+    if (fillIfEmpty('staffPassportExpiry', S.extractedData.expiry_date))                       filled.push('\u2463 Passport Expiry');
+    if (fillIfEmpty('staffVisaExpiry',     S.extractedData.visa_expiry))                       filled.push('\u2464 Visa Expiry');
+    if (fillIfEmpty('staffEidNo',          S.extractedData.id_number))                         filled.push('\u2465 EID No');
+    if (fillIfEmpty('staffNationality',   (S.extractedData.nationality||'').toUpperCase()))    filled.push('\u2466 Nationality');
+    if (fillIfEmpty('staffDob',            S.extractedData.date_of_birth))                     filled.push('\u2467 DOB');
+    if (fillIfEmpty('staffSponsor',        S.extractedData.sponsor))                           filled.push('\u2468 Sponsor');
+    if (fillIfEmpty('staffRole',           S.extractedData.occupation))                        filled.push('\u2469 Occupation');
+
+    if (filled.length > 0) {
+      toast('\u26a1 Auto-filled ' + filled.length + ' fields from ' + (isPassport ? 'Passport' : 'EID'), 'success');
+    } else {
+      toast('📄 ' + (isPassport ? 'Passport' : 'EID') + ' scanned — please verify and fill fields manually', 'info');
+    }
+  } catch(e) {
+    console.warn('OCR failed:', e.message);
+    toast('OCR could not read this document clearly — fill in manually', 'info');
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = () => rej(new Error('FileReader failed'));
+    r.readAsDataURL(blob);
+  });
+}
+
+function highlightField(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.borderColor = 'var(--gold)';
+  el.style.background = 'rgba(200,145,58,0.08)';
+  setTimeout(() => { el.style.borderColor = ''; el.style.background = ''; }, 3000);
+}
+
+// ════════════════════════════════════════════════════
+// DRIVE API HELPERS
+// ════════════════════════════════════════════════════
+async function driveGet(path) {
+  const r = await fetch(`https://www.googleapis.com/drive/v3/${path}`, {
+    headers: { 'Authorization': `Bearer ${S.accessToken}` }
+  });
+  if (!r.ok) throw new Error(`Drive GET ${path} → ${r.status}`);
+  return r.json();
+}
+
+async function drivePost(path, body) {
+  const r = await fetch(`https://www.googleapis.com/drive/v3/${path}`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${S.accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`Drive POST ${path} → ${r.status}`);
+  return r.json();
+}
+
+async function getOrCreateFolder(name, parentId) {
+  let q = `name='${name.replace(/'/g,"\\'")}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  if (parentId) q += ` and '${parentId}' in parents`;
+  const res = await driveGet(`files?q=${encodeURIComponent(q)}&fields=files(id,name)&pageSize=5`);
+  if (res.files.length > 0) return res.files[0].id;
+  const meta = { name, mimeType: 'application/vnd.google-apps.folder' };
+  if (parentId) meta.parents = [parentId];
+  const created = await drivePost('files', meta);
+  return created.id;
+}
+
+async function uploadFile(blob, name, folderId) {
+  const meta = { name, parents: [folderId], mimeType: 'image/jpeg' };
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+  form.append('file', blob, name);
+  const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${S.accessToken}` },
+    body: form
+  });
+  if (!r.ok) throw new Error(`Upload failed: ${r.status}`);
+  return r.json();
+}
+
+// ════════════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════════════
+function fmtBytes(b) {
+  if (b >= 1e9) return (b/1e9).toFixed(1)+' GB';
+  if (b >= 1e6) return (b/1e6).toFixed(0)+' MB';
+  return (b/1e3).toFixed(0)+' KB';
+}
+
+function copySingle(btn, val) {
+  navigator.clipboard.writeText(val).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+function copyAllOrigins() {
+  const text = (S.allOrigins || []).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    toast('All ' + (S.allOrigins?.length || 0) + ' origins copied — paste each one into Google Console', 'success');
+  });
+}
+
+function copyCmd(el) {
+  const cmd = el.querySelector('span').textContent;
+  navigator.clipboard.writeText(cmd).then(() => {
+    const orig = el.querySelector('.cmd-copy').textContent;
+    el.querySelector('.cmd-copy').textContent = '✓ copied';
+    setTimeout(() => el.querySelector('.cmd-copy').textContent = orig, 1500);
+  });
+}
+
+let toastTimer = null;
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toastContainer');
+  const div = document.createElement('div');
+  div.className = `toast ${type}`;
+  const icon = type === 'success' ? '✓' : type === 'error' ? '⚠' : 'ℹ';
+  div.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  c.appendChild(div);
+  setTimeout(() => {
+    div.style.animation = 'fadeOut 0.3s ease forwards';
+    setTimeout(() => div.remove(), 300);
+  }, 4000);
+}
+</script>
+</body>
+</html>
